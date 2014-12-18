@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<head id="Head1" runat="server">
+<meta charset="ISO-8859-1">
+    <title></title>
+    <script src="/scripts/jquery-2.1.1.js"></script>
+    <link href="/stylesheet/StyleSheet1.css" rel="stylesheet" type="text/css" />
+    
+</head>
+<body onload="initialize();">
+    
+    <div>
+    <div id="tabs-container">
+    &nbsp;<ul class="tabs-menu">
+            <li>&nbsp;</li>
+        <li class="current"><a href="#tab-1">directions</a></li>
+        <li><a href="#tab-2">location</a></li>
+        <li><a href="#tab-3">weather</a></li>
+        
+    </ul>
+    <div class="tab">
+        <div id="tab-1" class="tab-content">
+            <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"></script>
+            <div id="map"></div>
+            
+ <h1>directions</h1>
+
+            <p1>source</p1>
+            <input type="text" id="src" name="source">
+            <p1>destination</p1>
+            <input type="text" id="dest" name="destination">
+            <button id="button">start</button>
+            <button id="clbutton">Clear</button>
+            <div id="map_view" hidden="true" style="height: 500px; width: 500px"></div>
+        </div>
+        <div id="tab-2" class="tab-content">
+            <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"></script>
+            <p>
+                 <h1>location</h1>
+
+            </p>
+            <div id="#map_geo"></div>
+            <table>
+                <tr>
+                    <td>
+                        <button id="Nbutton">my location</button>
+                        <button id="Nclbutton">Clear</button>
+                    </td>
+                </tr>
+            </table>
+            <div id="map_geo" hidden="true" style="width: 530px; height: 230px"></div>
+        
+        </div>
+        <div id="tab-3" class="tab-content">
+            <div id="weather"></div>        
+ <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=weather"></script>
+<p><h1>Weather Display</h1></p>
+
+<table>
+    <tr>
+       <!--- <td>City:</td> 
+        <td><input type ="text" id="W1" name="Source"></td>--->
+        <td>
+    <button id="Wbutton"> Weather Display</button>
+            <button id="Wclbutton">Clear</button></td></tr></table>    
+    
+         <div id="map_weather" style="width: 530px; height: 230px"></div>
+
+        </div>
+        <div id="tab-4" class="tab-content">
+            
+        </div>
+    </div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</div>
+    </div>
+        <script type ="text/javascript">
+            // <link href="/stylesheet/StyleSheet1.css" rel="stylesheet" type="text/css" />
+
+            $(document).ready(function () {
+                $(".tabs-menu a").click(function (event) {
+                    event.preventDefault();
+                    $(this).parent().addClass("current");
+                    $(this).parent().siblings().removeClass("current");
+                    var tab = $(this).attr("href");
+                    $(".tab-content").not(tab).css("display", "none");
+                    $(tab).fadeIn();
+                });
+            });
+
+            //Weather Display
+
+            function Execute() {
+                var myOptions1 = {
+                    zoom: 10,
+                    center: new google.maps.LatLng(39.099727, -94.578567),
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
+                var map = new google.maps.Map(document.getElementById("map_weather"), myOptions1);
+                var weather = new google.maps.weather.WeatherLayer({
+                    temperatureUnits: google.maps.weather.TemperatureUnit.DEGREE //Temperature unit can also be changed to FAHRENHEIT by using the keyword "FAHRENHEIT"
+                });
+                weather.setMap(map);
+                var cloud = new google.maps.weather.CloudLayer();
+                cloud.setMap(map);
+            }
+
+            //Navgator Display
+
+
+            function Navigator() {
+                var elevator;
+                var myOptions = {
+                    zoom: 30,
+                    mapTypeId: 'terrain'
+                };
+                //var map_geo = new google.maps.Map(document.getElementById("map_geo"), myOptions);
+                map = new google.maps.Map($('#map_geo')[0], myOptions);
+                var markers = [];
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        var pos = new google.maps.LatLng(position.coords.latitude,
+                                                         position.coords.longitude);
+
+                        var infowindow = new google.maps.InfoWindow({
+                            map: map,
+                            position: pos,
+                            content: 'Location found using HTML5.'
+                        });
+
+                        map.setCenter(pos);
+                    }, function () {
+                        handleNoGeolocation(true);
+                    });
+                } else {
+                    handleNoGeolocation(false);
+                }
+            }
+
+            //Direction Display
+
+            var directionDisplay;
+            var directionsService = new google.maps.DirectionsService();
+            var map2;
+            var Source;
+            var dest;
+
+            function initialize() {
+                var Source = document.getElementById("src").value;
+                var dest = document.getElementById("dest").value;
+                if (Source == "" && Destination == "") {
+
+                }
+                else {
+                    document.getElementById("map_view").hidden = false;
+                    directionsDisplay = new google.maps.DirectionsRenderer();
+                    var center = new google.maps.LatLng(0, 0);
+                    var myOptions =
+                    {
+                        zoom: 7,
+                        mapTypeId: google.maps.MapTypeId.ROADMAP,
+                        center: center
+                    }
+                    map2 = new google.maps.Map(document.getElementById("map_view"), myOptions);
+                    directionsDisplay.setMap(map2);
+
+                    var request =
+                    {
+                        origin: Source,
+                        destination: dest,
+                        travelMode: google.maps.DirectionsTravelMode.DRIVING
+                    };
+                    directionsService.route(request, function (response, status) {
+                        if (status == google.maps.DirectionsStatus.OK) {
+                            directionsDisplay.setDirections(response);
+                        }
+                    });
+                }
+            }
+
+            var button = document.getElementById('button');
+
+            var onClick = function () {
+                initialize();
+            };
+
+            button.addEventListener('click', onClick, false);
+
+            var clbutton = document.getElementById('clbutton');
+
+            var onClClick = function () {
+                document.getElementById("map_view").hidden = true;
+                document.getElementById("src").value = "";
+                document.getElementById("dest").value = "";
+
+            };
+
+            clbutton.addEventListener('click', onClClick, false);
+
+            //Navigator Display
+            var Nbutton = document.getElementById('Nbutton');
+            var onClick = function () {
+                document.getElementById("map_geo").hidden = false;
+                Navigator();
+            };
+            Nbutton.addEventListener('click', onClick, false);
+
+            var onClClick = function () {
+                document.getElementById("map_geo").hidden = true;
+
+            };
+
+            Nclbutton.addEventListener('click', onClClick, false);
+
+
+            //Weather Display
+
+            var Wbutton = document.getElementById('Wbutton');
+            var onClick = function () {
+                document.getElementById("map_weather").hidden = false;
+                Execute();
+            };
+            Wbutton.addEventListener('click', onClick, false);
+
+            var onClClick = function () {
+                document.getElementById("map_weather").hidden = true;
+
+            };
+
+            Wclbutton.addEventListener('click', onClClick, false);
+
+
+    </script>
+    
+    
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>In</title>
+<script src="/scripts/jquery-2.1.1.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+    //<![CDATA[
+        $(window).load(function(){ function doGeo( position ) 
+        {
+            
+            $( "#lat" ).html("lat: " + position.coords.latitude );
+            $( "#lon" ).html("lon: " + position.coords.longitude );
+            $( "#acc" ).html("acc: " + position.coords.accuracy );
+           if((position.coords.latitude).toFixed(1)==39.0 && (position.coords.longitude).toFixed(1) ==-94.6)
+        	   {
+        	   alert("take the quiz" );
+        	   window.location="/page1.html"
+        	   
+        	   }
+           else
+        	   {
+        	   alert("go to class");
+        	   }
+              
+        }
+
+        function lost()
+        {
+            
+        };
+
+        navigator.geolocation.watchPosition( doGeo, lost, {maximumAge:0,enableHighAccuracy:true} );
+
+
+});
+    //]]>
+</script>
+<div id="lat">lat:</div>
+<div id="lon">lon:</div>
+<div id="acc">acc:</div>
+
+</body>
+</html>
